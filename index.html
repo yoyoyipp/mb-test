@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mark Beaumont — V3 Kinetic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800;900&family=Archivo+Black&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#0A0A0A;--paper:#EDE7DA;--lime:#D4FF3D;--electric:#2B2BFF;--coral:#FF5B36;--white:#fff;--mid:#777;--line:#1a1a1a;--f:'Archivo',sans-serif;--mono:'JetBrains Mono',monospace;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--f);background:var(--ink);color:var(--paper);overflow-x:hidden;}
+img{display:block;max-width:100%;}
+
+/* GLOBAL PROGRESS BAR */
+#prog{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--lime);z-index:200;transition:width .1s linear;}
+
+/* TOP NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:150;display:flex;justify-content:space-between;align-items:center;padding:18px clamp(20px,4vw,52px);font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--paper);}
+.nav .logo{font-family:'Archivo Black',sans-serif;font-size:16px;letter-spacing:-.02em;}
+.nav-pill{display:flex;gap:0;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:4px;backdrop-filter:blur(10px);}
+.nav-pill a{padding:8px 14px;color:var(--paper);text-decoration:none;border-radius:100px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;transition:background .25s,color .25s;}
+.nav-pill a:hover{background:var(--lime);color:var(--ink);}
+@media(max-width:760px){.nav-pill{display:none;}}
+
+/* GRAIN OVERLAY */
+.grain{position:fixed;inset:0;pointer-events:none;z-index:300;opacity:.05;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}
+
+/* ============ HERO ============ */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px clamp(20px,5vw,80px) 60px;position:relative;overflow:hidden;background:var(--ink);}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);margin-bottom:32px;display:inline-flex;align-items:center;gap:14px;}
+.hero-eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);animation:pulse 1.6s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+.hero-h{font-family:'Archivo Black',sans-serif;font-size:clamp(72px,18vw,300px);line-height:.82;letter-spacing:-.045em;color:var(--paper);}
+.hero-h .word{display:inline-block;overflow:hidden;}
+.hero-h .word span{display:inline-block;transform:translateY(110%);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards;}
+.hero-h .word:nth-child(1) span{animation-delay:.1s;}
+.hero-h .word:nth-child(2) span{animation-delay:.2s;color:var(--lime);}
+@keyframes rise{to{transform:translateY(0);}}
+.hero-marq{margin-top:18px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);}
+
+.hero-stats{margin-top:clamp(40px,5vw,72px);display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);}
+@media(max-width:760px){.hero-stats{grid-template-columns:1fr 1fr;}}
+.hs{padding:22px 16px 22px 0;border-right:1px solid var(--line);}
+.hs:last-child{border-right:none;}
+.hs b{font-family:'Archivo Black',sans-serif;font-size:clamp(28px,3.6vw,48px);letter-spacing:-.03em;display:block;color:var(--paper);line-height:1;}
+.hs span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-top:8px;display:block;}
+
+/* hero floating stickers */
+.sticker{position:absolute;background:var(--lime);color:var(--ink);font-family:'Archivo Black',sans-serif;padding:10px 16px;border-radius:6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;transform:rotate(-6deg);animation:wobble 4s ease-in-out infinite;}
+.sticker.s2{background:var(--coral);color:var(--white);transform:rotate(5deg);animation-delay:-2s;}
+.sticker.s3{background:var(--electric);color:var(--white);transform:rotate(-3deg);animation-delay:-1s;}
+@keyframes wobble{0%,100%{transform:rotate(var(--rot,-6deg)) translateY(0);}50%{transform:rotate(calc(var(--rot,-6deg) * 1.2)) translateY(-6px);}}
+
+.hero-cta{margin-top:36px;display:flex;gap:10px;flex-wrap:wrap;}
+.cta{padding:14px 24px;font-family:var(--f);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;border:none;border-radius:100px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;text-decoration:none;transition:transform .25s ease,background .25s ease,color .25s ease;}
+.cta-p{background:var(--lime);color:var(--ink);}
+.cta-p:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--coral);}
+.cta-s{background:transparent;color:var(--paper);border:1.5px solid rgba(255,255,255,.2);}
+.cta-s:hover{background:var(--paper);color:var(--ink);border-color:var(--paper);}
+
+/* MARQUEE STRIP */
+.marq{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--ink);}
+.marq-track{display:flex;gap:48px;padding:18px 0;animation:slide 30s linear infinite;font-family:'Archivo Black',sans-serif;font-size:clamp(28px,4vw,52px);letter-spacing:-.03em;white-space:nowrap;}
+.marq-track i{font-style:normal;color:var(--lime);margin:0 24px;}
+.marq-track em{font-style:normal;color:var(--mid);font-weight:400;font-family:var(--f);}
+@keyframes slide{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ============ SECTIONS ============ */
+.sec{padding:clamp(80px,10vw,160px) clamp(20px,5vw,80px);position:relative;}
+.sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:clamp(48px,6vw,80px);max-width:1320px;margin-left:auto;margin-right:auto;}
+.sec-tag{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);display:inline-flex;align-items:center;gap:12px;}
+.sec-tag::before{content:'';display:block;width:24px;height:1.5px;background:var(--lime);}
+.sec-h{font-family:'Archivo Black',sans-serif;font-size:clamp(48px,9vw,140px);line-height:.86;letter-spacing:-.04em;}
+.sec-h .ln{display:block;}
+
+/* ABOUT */
+#about{background:var(--paper);color:var(--ink);}
+#about .sec-tag{color:var(--electric);}
+#about .sec-tag::before{background:var(--electric);}
+.ab-l{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(40px,6vw,90px);align-items:flex-start;}
+@media(max-width:880px){.ab-l{grid-template-columns:1fr;}}
+.ab-body{margin-top:32px;font-size:clamp(15px,1.4vw,17px);line-height:1.7;color:#444;max-width:55ch;}
+.ab-body p+p{margin-top:14px;}
+.ab-img{position:relative;aspect-ratio:4/5;background:#222;border-radius:16px;overflow:hidden;}
+.ab-img img{width:100%;height:100%;object-fit:cover;object-position:center 22%;transition:transform .6s ease;}
+.ab-img:hover img{transform:scale(1.04);}
+.ab-img .badge{position:absolute;top:18px;left:18px;background:var(--lime);color:var(--ink);font-family:'Archivo Black',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-radius:100px;}
+.stat-row{margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+@media(max-width:520px){.stat-row{grid-template-columns:1fr 1fr;}}
+.stat-c{background:var(--ink);color:var(--paper);padding:18px 16px;border-radius:14px;transition:background .3s,transform .3s;}
+.stat-c:hover{background:var(--electric);transform:translateY(-4px);}
+.stat-c b{font-family:'Archivo Black',sans-serif;font-size:clamp(22px,3vw,32px);letter-spacing:-.03em;display:block;line-height:1;}
+.stat-c span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);margin-top:8px;display:block;}
+
+/* TWO WORLDS — animated split */
+#twolives{background:var(--ink);overflow:hidden;}
+.tl-grid{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:760px){.tl-grid{grid-template-columns:1fr;}}
+.tl-card{position:relative;border-radius:18px;overflow:hidden;padding:40px;min-height:480px;display:flex;flex-direction:column;justify-content:flex-end;background:#181818;cursor:pointer;transition:transform .4s ease;}
+.tl-card:hover{transform:translateY(-8px);}
+.tl-card .bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform .8s ease,filter .4s;filter:saturate(.7) contrast(1.05);}
+.tl-card:hover .bg{transform:scale(1.06);filter:saturate(1) contrast(1.1);}
+.tl-card .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.2) 0%,rgba(0,0,0,.85) 80%);}
+.tl-card.left .bg{background-image:url('../images/Slide 3.jpg');}
+.tl-card.right .bg{background-image:url('../images/Slide 7.jpg');}
+.tl-card > *{position:relative;z-index:2;}
+.tl-side{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);margin-bottom:16px;}
+.tl-card.right .tl-side{color:var(--coral);}
+.tl-name{font-family:'Archivo Black',sans-serif;font-size:clamp(34px,5vw,64px);line-height:.92;letter-spacing:-.03em;color:var(--paper);margin-bottom:18px;}
+.tl-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.tl-tags span{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border:1px solid rgba(255,255,255,.2);border-radius:100px;color:rgba(255,255,255,.7);}
+
+/* RECORD — kinetic numbers */
+#record{background:var(--lime);color:var(--ink);overflow:hidden;}
+#record .sec-tag{color:var(--ink);}
+#record .sec-tag::before{background:var(--ink);}
+.rec-h{font-family:'Archivo Black',sans-serif;font-size:clamp(64px,14vw,240px);line-height:.82;letter-spacing:-.04em;color:var(--ink);}
+.rec-marq{margin-top:14px;display:flex;gap:24px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:rgba(0,0,0,.6);flex-wrap:wrap;}
+.rec-bigtime{margin-top:48px;max-width:1320px;margin-left:auto;margin-right:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:2px solid var(--ink);}
+@media(max-width:760px){.rec-bigtime{grid-template-columns:1fr 1fr;}}
+.rb{padding:32px 18px 32px 0;border-right:2px solid var(--ink);position:relative;}
+.rb:last-child{border-right:none;}
+.rb b{font-family:'Archivo Black',sans-serif;font-size:clamp(48px,7vw,108px);letter-spacing:-.04em;display:block;line-height:1;}
+.rb span{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;display:block;margin-top:10px;}
+.rb::after{content:'';position:absolute;left:0;bottom:0;height:6px;width:0;background:var(--coral);transition:width .8s ease;}
+.rb.on::after{width:100%;}
+/* moving bicycle */
+.bike-track{position:relative;height:140px;margin-top:48px;border-top:1px dashed rgba(0,0,0,.25);border-bottom:1px dashed rgba(0,0,0,.25);overflow:hidden;}
+.bike-track svg{position:absolute;left:-260px;top:30px;animation:ride 6s linear infinite;color:var(--ink);}
+@keyframes ride{0%{transform:translateX(0);}100%{transform:translateX(calc(100vw + 260px));}}
+.bike-track .ground-tick{position:absolute;bottom:8px;width:18px;height:1px;background:rgba(0,0,0,.3);animation:tick 1.2s linear infinite;}
+@keyframes tick{0%{transform:translateX(100vw);}100%{transform:translateX(-30px);}}
+
+/* SPEAKING — magazine grid */
+#speaking{background:var(--paper);color:var(--ink);}
+#speaking .sec-tag{color:var(--coral);}
+#speaking .sec-tag::before{background:var(--coral);}
+.sp-feat{max-width:1320px;margin:0 auto 32px;border-radius:18px;overflow:hidden;aspect-ratio:21/8;background:#222;position:relative;}
+.sp-feat img{width:100%;height:100%;object-fit:cover;object-position:center 38%;transition:transform 1.5s ease;}
+.sp-feat:hover img{transform:scale(1.04);}
+.sp-feat::after{content:'LIVE · KEYNOTE · 2025';position:absolute;bottom:18px;left:18px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:#fff;background:rgba(0,0,0,.5);padding:6px 12px;border-radius:100px;}
+.sp-grid{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:880px){.sp-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:520px){.sp-grid{grid-template-columns:1fr;}}
+.sp-card{background:var(--ink);color:var(--paper);border-radius:14px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;position:relative;overflow:hidden;transition:transform .35s ease;}
+.sp-card:hover{transform:translateY(-6px);}
+.sp-card::before{content:'';position:absolute;inset:0;background:var(--electric);transform:translateY(100%);transition:transform .45s cubic-bezier(.2,.8,.2,1);}
+.sp-card:hover::before{transform:translateY(0);}
+.sp-card > *{position:relative;z-index:1;}
+.sp-num{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--lime);}
+.sp-name{font-family:'Archivo Black',sans-serif;font-size:24px;letter-spacing:-.02em;line-height:1.05;margin-top:12px;}
+.sp-desc{font-size:13px;line-height:1.55;color:#888;margin-top:10px;transition:color .35s;}
+.sp-card:hover .sp-desc{color:rgba(255,255,255,.85);}
+.sp-arr{margin-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);transition:color .35s;}
+.sp-card:hover .sp-arr{color:var(--lime);}
+
+/* TRUSTED */
+.trust{padding:32px clamp(20px,5vw,80px);background:var(--paper);color:var(--ink);border-top:1px solid rgba(0,0,0,.08);overflow:hidden;}
+.trust-r{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:32px;flex-wrap:wrap;}
+.trust-l{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);}
+.trust-n{font-family:'Archivo Black',sans-serif;font-size:clamp(20px,2.6vw,30px);letter-spacing:-.02em;color:var(--ink);display:flex;gap:32px;flex-wrap:wrap;}
+.trust-n i{font-style:normal;color:var(--coral);}
+
+/* TESTIMONIALS — scroll-snap row */
+#testimonials{background:var(--ink);overflow:hidden;}
+.tt-track{display:flex;gap:14px;padding:0 clamp(20px,5vw,80px);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;cursor:grab;padding-bottom:24px;}
+.tt-track:active{cursor:grabbing;}
+.tt-track::-webkit-scrollbar{height:2px;}
+.tt-track::-webkit-scrollbar-thumb{background:var(--lime);}
+.tt-card{flex-shrink:0;width:clamp(280px,32vw,400px);scroll-snap-align:start;padding:36px 32px;border-radius:18px;display:flex;flex-direction:column;justify-content:space-between;min-height:280px;transition:transform .3s;}
+.tt-card:hover{transform:translateY(-6px);}
+.tt-card:nth-child(1){background:var(--electric);color:var(--paper);}
+.tt-card:nth-child(2){background:var(--lime);color:var(--ink);}
+.tt-card:nth-child(3){background:var(--coral);color:var(--paper);}
+.tt-card:nth-child(4){background:var(--paper);color:var(--ink);}
+.tt-card:nth-child(5){background:var(--electric);color:var(--paper);}
+.tt-card:nth-child(6){background:var(--lime);color:var(--ink);}
+.tt-q{font-family:'Archivo',sans-serif;font-weight:500;font-size:clamp(15px,1.5vw,17px);line-height:1.5;letter-spacing:-.005em;}
+.tt-q::before{content:'"';font-family:'Archivo Black';font-size:50px;line-height:.6;display:block;margin-bottom:6px;opacity:.5;}
+.tt-a{margin-top:24px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;}
+
+/* PODCAST */
+#podcast{background:var(--paper);color:var(--ink);}
+#podcast .sec-tag{color:var(--electric);}
+#podcast .sec-tag::before{background:var(--electric);}
+.pd-l{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:flex-start;}
+@media(max-width:880px){.pd-l{grid-template-columns:1fr;}}
+.pd-body{font-size:clamp(15px,1.4vw,17px);line-height:1.65;color:#444;margin-top:24px;max-width:50ch;}
+.pd-platforms{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;}
+.pd-platforms a{padding:10px 18px;border:1.5px solid #333;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);text-decoration:none;transition:background .25s,color .25s,border-color .25s;}
+.pd-platforms a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.pd-eps{margin-top:36px;}
+.pd-ep{display:grid;grid-template-columns:auto 1fr auto auto;gap:18px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(0,0,0,.1);text-decoration:none;color:inherit;transition:padding-left .3s ease,background .3s;}
+.pd-ep:hover{padding-left:14px;background:rgba(43,43,255,.05);}
+.pd-ep .play{width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--lime);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s,transform .3s;}
+.pd-ep:hover .play{background:var(--electric);transform:scale(1.1);}
+.pd-ep .play::before{content:'';display:block;width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:9px solid currentColor;margin-left:3px;}
+.pd-ep .t{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;letter-spacing:-.005em;}
+.pd-ep .m{font-family:var(--mono);font-size:11px;color:var(--mid);}
+.pd-ep .a{font-size:14px;color:var(--mid);}
+.pd-art{display:flex;flex-direction:column;gap:14px;}
+.pd-art img{border-radius:14px;width:100%;}
+
+/* HOW — vertical timeline */
+#how{background:var(--ink);overflow:hidden;}
+.how-l{max-width:1100px;margin:0 auto;position:relative;padding-left:60px;}
+@media(max-width:600px){.how-l{padding-left:40px;}}
+.how-line{position:absolute;top:0;bottom:40px;left:18px;width:2px;background:linear-gradient(var(--lime),var(--electric));}
+@media(max-width:600px){.how-line{left:8px;}}
+.how-step{position:relative;padding:32px 0 32px 30px;border-bottom:1px solid var(--line);transition:padding-left .35s;}
+.how-step:hover{padding-left:44px;}
+.how-step:last-child{border-bottom:none;}
+.how-dot{position:absolute;left:-50px;top:36px;width:38px;height:38px;border-radius:50%;background:var(--ink);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Archivo Black',sans-serif;font-size:14px;color:var(--mid);transition:all .35s;}
+@media(max-width:600px){.how-dot{left:-40px;width:28px;height:28px;font-size:11px;}}
+.how-step:hover .how-dot{background:var(--lime);border-color:var(--lime);color:var(--ink);transform:scale(1.1);}
+.how-num{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);margin-bottom:8px;}
+.how-t{font-family:'Archivo Black',sans-serif;font-size:clamp(20px,2.6vw,28px);letter-spacing:-.015em;line-height:1.15;color:var(--paper);}
+.how-d{font-size:13.5px;line-height:1.6;color:var(--mid);margin-top:8px;max-width:60ch;}
+.how-time{margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--coral);display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--line);border-radius:100px;}
+
+/* CONTACT */
+#contact{background:var(--paper);color:var(--ink);}
+#contact .sec-tag{color:var(--coral);}
+#contact .sec-tag::before{background:var(--coral);}
+.cn-l{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr;gap:64px;align-items:flex-start;}
+@media(max-width:880px){.cn-l{grid-template-columns:1fr;}}
+.fg{margin-bottom:18px;}
+.fg label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-bottom:6px;}
+.fg label .r{color:var(--coral);}
+.fc{width:100%;border:none;border-bottom:1.5px solid rgba(0,0,0,.15);padding:10px 0;font-family:var(--f);font-size:15px;background:transparent;outline:none;transition:border-color .25s;color:var(--ink);}
+.fc:focus{border-bottom-color:var(--electric);}
+.fc::placeholder{color:#bbb;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+@media(max-width:600px){.frow{grid-template-columns:1fr;}}
+.subm{margin-top:24px;background:var(--ink);color:var(--lime);border:none;padding:16px 28px;font-family:'Archivo Black',sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-radius:100px;transition:transform .25s,background .25s,color .25s;display:inline-flex;align-items:center;gap:14px;}
+.subm:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--coral);}
+.cn-side h4{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,.1);}
+.cn-side .team{margin-bottom:24px;}
+.cn-side .team .row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.08);font-size:14px;}
+.cn-side .team .row span{color:var(--mid);font-family:var(--mono);font-size:11px;}
+.fees-card{background:var(--ink);color:var(--paper);padding:28px;border-radius:18px;}
+.fees-card h4{color:#666;border-color:#1a1a1a;}
+.fees-card .row{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-bottom:1px solid #1a1a1a;}
+.fees-card .row:last-of-type{border-bottom:none;}
+.fees-card .row span{font-size:13px;color:#888;}
+.fees-card .row b{font-family:'Archivo Black',sans-serif;font-size:22px;color:var(--lime);letter-spacing:-.02em;}
+.fees-card p{font-size:11px;color:#444;margin-top:10px;line-height:1.55;}
+
+footer{background:var(--ink);color:var(--mid);padding:32px clamp(20px,5vw,80px);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;border-top:1px solid var(--line);}
+footer b{color:var(--paper);font-weight:500;}
+footer a{color:var(--mid);text-decoration:none;}
+footer a:hover{color:var(--lime);}
+
+/* reveal */
+.r-up{opacity:0;transform:translateY(40px);transition:opacity 1s ease,transform 1s ease;}
+.r-up.on{opacity:1;transform:none;}
+.r-stagger > *{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease;}
+.r-stagger.on > *{opacity:1;transform:none;}
+.r-stagger.on > *:nth-child(1){transition-delay:.05s;}
+.r-stagger.on > *:nth-child(2){transition-delay:.15s;}
+.r-stagger.on > *:nth-child(3){transition-delay:.25s;}
+.r-stagger.on > *:nth-child(4){transition-delay:.35s;}
+.r-stagger.on > *:nth-child(5){transition-delay:.45s;}
+.r-stagger.on > *:nth-child(6){transition-delay:.55s;}
+
+/* TWEAKS */
+#tweaks{position:fixed;bottom:18px;right:18px;background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-family:var(--mono);font-size:11px;color:var(--paper);z-index:9999;max-width:240px;display:none;}
+#tweaks.on{display:block;}
+#tweaks h4{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin-bottom:12px;}
+#tweaks .row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+#tweaks label{flex:1;}
+#tweaks .swatch{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid var(--ink);box-shadow:0 0 0 1px var(--line);}
+#tweaks .swatch.on{box-shadow:0 0 0 2px var(--paper);}
+#tweaks .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+#tweaks .seg button{flex:1;border:none;background:transparent;padding:6px 10px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;color:var(--mid);}
+#tweaks .seg button.on{background:var(--lime);color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+<div class="grain"></div>
+
+<header class="nav">
+  <span class="logo">MB.</span>
+  <nav class="nav-pill">
+    <a href="#about">About</a>
+    <a href="#twolives">Method</a>
+    <a href="#record">Record</a>
+    <a href="#speaking">Speaking</a>
+    <a href="#podcast">Podcast</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <span class="logo" style="font-family:var(--mono);font-size:11px;letter-spacing:.14em;">2026</span>
+</header>
+
+<!-- HERO -->
+<section id="hero" data-screen-label="Hero">
+  <span class="sticker" style="--rot:-6deg;top:18%;right:14%;">World Record · 2017</span>
+  <span class="sticker s2" style="--rot:5deg;top:62%;right:8%;">Atacama 2026 →</span>
+  <span class="sticker s3" style="--rot:-3deg;top:42%;right:30%;">£1.6m raised</span>
+
+  <div class="hero-eyebrow"><span class="dot"></span>Available for 2026 — UK · Europe · Global</div>
+  <h1 class="hero-h">
+    <span class="word"><span>MARK</span></span><br>
+    <span class="word"><span>BEAUMONT.</span></span>
+  </h1>
+  <p class="hero-marq">Endurance athlete · BBC broadcaster · Author · Investor · Speaker</p>
+
+  <div class="hero-cta">
+    <a href="#contact" class="cta cta-p">Book Mark →</a>
+    <a href="#about" class="cta cta-s">Read More ↓</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hs"><b>78</b><span>Days · Around the World</span></div>
+    <div class="hs"><b>200+</b><span>Keynotes Delivered</span></div>
+    <div class="hs"><b>£2M+</b><span>Raised for Charity</span></div>
+    <div class="hs"><b>100+</b><span>Countries Visited</span></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marq">
+  <div class="marq-track">
+    <span>Rethink What's Possible <i>★</i></span>
+    <span>78d 14h 40m <em>around the world</em></span>
+    <span>Atacama Desert <i>★</i></span>
+    <span>BBC <em>broadcaster</em></span>
+    <span>Doddie Foundation <i>★</i></span>
+    <span>Rethink What's Possible <i>★</i></span>
+    <span>78d 14h 40m <em>around the world</em></span>
+    <span>Atacama Desert <i>★</i></span>
+    <span>BBC <em>broadcaster</em></span>
+    <span>Doddie Foundation <i>★</i></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="sec" id="about" data-screen-label="About">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">01 — About</span>
+      <h2 class="sec-h" style="margin-top:22px;"><span class="ln">Rethink</span><span class="ln">what's <em style="font-style:normal;color:var(--electric);">possible.</em></span></h2>
+    </div>
+  </div>
+  <div class="ab-l">
+    <div class="r-up">
+      <div class="ab-body">
+        <p>Mark Beaumont is one of the world's greatest endurance athletes — multiple Guinness World Record holder, BBC broadcaster, bestselling author, and impact investor.</p>
+        <p>He circumnavigated the globe by bicycle in <b>78 days</b>, redefining what is humanly possible. Two practices, one method — sport and business, expedition and boardroom.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat-c"><b>100+</b><span>Countries</span></div>
+        <div class="stat-c"><b>18,000</b><span>Miles</span></div>
+        <div class="stat-c"><b>200+</b><span>Keynotes</span></div>
+        <div class="stat-c"><b>£2M+</b><span>Raised</span></div>
+      </div>
+    </div>
+    <div class="ab-img r-up">
+      <img src="../images/Slide 2.jpg" alt="Mark Beaumont">
+      <span class="badge">78 Days · 2017</span>
+    </div>
+  </div>
+</section>
+
+<!-- TWO LIVES -->
+<section class="sec" id="twolives" data-screen-label="Method">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">02 — Method</span>
+      <h2 class="sec-h" style="margin-top:22px;color:var(--paper);"><span class="ln">Two worlds.</span><span class="ln" style="color:var(--lime);">One method.</span></h2>
+    </div>
+  </div>
+  <div class="tl-grid r-stagger">
+    <div class="tl-card left">
+      <div class="bg"></div><div class="scrim"></div>
+      <span class="tl-side">Side A · Sport</span>
+      <h3 class="tl-name">One Man.<br>One Mission.</h3>
+      <div class="tl-tags"><span>Building Teams</span><span>Creating Plans</span><span>Quiet Confidence</span></div>
+    </div>
+    <div class="tl-card right">
+      <div class="bg"></div><div class="scrim"></div>
+      <span class="tl-side">Side B · Business</span>
+      <h3 class="tl-name">Two Worlds.<br>One Method.</h3>
+      <div class="tl-tags"><span>Finance &amp; Growth</span><span>Backing Business</span><span>First Principles</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- RECORD -->
+<section class="sec" id="record" data-screen-label="Record">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">03 — World Record</span>
+      <h2 class="rec-h" style="margin-top:22px;"><span style="display:block;">FASTEST</span><span style="display:block;">AROUND</span><span style="display:block;">THE WORLD.</span></h2>
+      <div class="rec-marq">★ Solo · By Bicycle · 18,000 miles · GUINNESS RECORD · 2017</div>
+    </div>
+  </div>
+  <div class="rec-bigtime r-stagger" id="bigTime">
+    <div class="rb"><b>78</b><span>Days</span></div>
+    <div class="rb"><b>14</b><span>Hours</span></div>
+    <div class="rb"><b>40</b><span>Minutes</span></div>
+    <div class="rb"><b>18,000</b><span>Miles</span></div>
+  </div>
+  <div class="bike-track">
+    <svg width="200" height="80" viewBox="0 0 130 80" fill="none">
+      <circle cx="22" cy="58" r="16" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="108" cy="58" r="16" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M22 58L48 20h22M70 20L108 58M48 20L65 58" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="60" y1="20" x2="82" y2="20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="71" cy="20" r="3.5" stroke="currentColor" stroke-width="1.6"/>
+    </svg>
+  </div>
+</section>
+
+<!-- SPEAKING -->
+<section class="sec" id="speaking" data-screen-label="Speaking">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">04 — Speaking</span>
+      <h2 class="sec-h" style="margin-top:22px;"><span class="ln">Speaking</span><span class="ln" style="color:var(--coral);">topics.</span></h2>
+    </div>
+    <a href="#contact" class="cta cta-p" style="background:var(--ink);color:var(--lime);">Book Mark →</a>
+  </div>
+  <div class="sp-feat r-up"><img src="../images/Slide 1.jpg" alt="Mark Beaumont speaking"></div>
+  <div class="sp-grid r-stagger">
+    <div class="sp-card"><span class="sp-num">★ 01</span><div><h3 class="sp-name">Leadership</h3><p class="sp-desc">Leading under extreme pressure — translated to every boardroom and team.</p></div><span class="sp-arr">Read brief →</span></div>
+    <div class="sp-card"><span class="sp-num">★ 02</span><div><h3 class="sp-name">Resilience</h3><p class="sp-desc">A masterclass in bouncing forward — not just back.</p></div><span class="sp-arr">Read brief →</span></div>
+    <div class="sp-card"><span class="sp-num">★ 03</span><div><h3 class="sp-name">Innovation</h3><p class="sp-desc">Breaking records requires creative systems thinking.</p></div><span class="sp-arr">Read brief →</span></div>
+    <div class="sp-card"><span class="sp-num">★ 04</span><div><h3 class="sp-name">First Principles</h3><p class="sp-desc">Strip away assumption. The methodology behind the impossible.</p></div><span class="sp-arr">Read brief →</span></div>
+    <div class="sp-card"><span class="sp-num">★ 05</span><div><h3 class="sp-name">Rethink What's Possible</h3><p class="sp-desc">The flagship — challenges audiences to expand their belief.</p></div><span class="sp-arr">Read brief →</span></div>
+    <div class="sp-card" style="background:transparent;border:1px dashed #555;"><div><h3 class="sp-name" style="color:#888;">All talks tailored<br>to your event</h3></div><span class="sp-arr" style="color:var(--coral);">Get in touch →</span></div>
+  </div>
+</section>
+
+<!-- TRUSTED -->
+<div class="trust">
+  <div class="trust-r">
+    <span class="trust-l">★ Trusted by</span>
+    <div class="trust-n">Google <i>·</i> Deloitte <i>·</i> HSBC <i>·</i> PwC <i>·</i> Standard Life <i>·</i> Sky</div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="sec" id="testimonials" data-screen-label="Testimonials" style="padding-bottom:0;">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag" style="color:var(--lime);">05 — Reviews</span>
+      <h2 class="sec-h" style="margin-top:22px;color:var(--paper);"><span class="ln">What people</span><span class="ln" style="color:var(--lime);">say.</span></h2>
+    </div>
+  </div>
+  <div class="tt-track" id="tt">
+    <div class="tt-card"><p class="tt-q">The room went silent — then erupted. Connected physical endurance to leadership in a way I've never seen.</p><div class="tt-a">Chief People Officer · Financial Services</div></div>
+    <div class="tt-card"><p class="tt-q">In a different league. Authentic, structured, transformative. We've booked him three times.</p><div class="tt-a">Head of Events · FTSE 100</div></div>
+    <div class="tt-card"><p class="tt-q">Audience feedback was off the charts. You could feel the energy in the room shift.</p><div class="tt-a">Managing Director · Professional Services</div></div>
+    <div class="tt-card"><p class="tt-q">Best speaker investment in five years. Immediate standing ovation.</p><div class="tt-a">COO · Healthcare Group</div></div>
+    <div class="tt-card"><p class="tt-q">Still talked about six months later. The highlight of our whole conference series.</p><div class="tt-a">Event Director · Technology</div></div>
+    <div class="tt-card"><p class="tt-q">Genuinely moving and practically useful. A rare combination. The team left changed.</p><div class="tt-a">VP Leadership · Global Consultancy</div></div>
+  </div>
+  <div style="text-align:right;padding:0 clamp(20px,5vw,80px) 80px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);">← Drag to explore</div>
+</section>
+
+<!-- PODCAST -->
+<section class="sec" id="podcast" data-screen-label="Podcast">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">06 — Podcast</span>
+      <h2 class="sec-h" style="margin-top:22px;"><span class="ln">The Endurance</span><span class="ln" style="color:var(--electric);">Podcast.</span></h2>
+    </div>
+  </div>
+  <div class="pd-l">
+    <div class="r-up">
+      <p class="pd-body">Conversations with the world's greatest endurance athletes — going deep on mindset, method, and the pursuit of extraordinary.</p>
+      <div class="pd-platforms">
+        <a href="#">YouTube ↗</a>
+        <a href="#">Spotify ↗</a>
+        <a href="#">Apple Podcasts ↗</a>
+      </div>
+      <div class="pd-eps">
+        <a href="#" class="pd-ep"><span class="play"></span><span class="t">Amy Ennion — Endurance Swimming Records</span><span class="m">55m</span><span class="a">→</span></a>
+        <a href="#" class="pd-ep"><span class="play"></span><span class="t">Rob Wainwright — Going the Extra Mile</span><span class="m">46m</span><span class="a">→</span></a>
+        <a href="#" class="pd-ep"><span class="play"></span><span class="t">Sarah Ruggins — LEJOGLE, Europe, the World?</span><span class="m">63m</span><span class="a">→</span></a>
+      </div>
+    </div>
+    <div class="pd-art r-up">
+      <img src="../images/Slide 4.JPG" alt="Endurance Podcast">
+      <img src="../images/Slide 5 (thumbail in podcast section).JPG" alt="Endurance Podcast">
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section class="sec" id="how" data-screen-label="How it works">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">07 — Process</span>
+      <h2 class="sec-h" style="margin-top:22px;color:var(--paper);"><span class="ln">How it</span><span class="ln" style="color:var(--lime);">works.</span></h2>
+    </div>
+  </div>
+  <div class="how-l">
+    <div class="how-line"></div>
+    <div class="how-step r-up"><div class="how-dot">01</div><div class="how-num">Step 01</div><h3 class="how-t">Tell us about your event</h3><p class="how-d">Use the form below — date, location, audience size, and topic focus.</p><span class="how-time">3 minutes</span></div>
+    <div class="how-step r-up"><div class="how-dot">02</div><div class="how-num">Step 02</div><h3 class="how-t">We confirm availability</h3><p class="how-d">Deborah will be in touch within 48 hours to check the diary.</p><span class="how-time">48 hours</span></div>
+    <div class="how-step r-up"><div class="how-dot">03</div><div class="how-num">Step 03</div><h3 class="how-t">Introductory call</h3><p class="how-d">A short 20-minute call to confirm the fit is right for both sides.</p><span class="how-time">20 minutes</span></div>
+    <div class="how-step r-up"><div class="how-dot">04</div><div class="how-num">Step 04</div><h3 class="how-t">Contract &amp; date secured</h3><p class="how-d">Simple contract, date held in the diary, brief and prep begin.</p><span class="how-time">Date secured</span></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact" data-screen-label="Contact">
+  <div class="sec-head r-up">
+    <div>
+      <span class="sec-tag">08 — Contact</span>
+      <h2 class="sec-h" style="margin-top:22px;"><span class="ln">Contact</span><span class="ln" style="color:var(--coral);">Mark.</span></h2>
+    </div>
+  </div>
+  <div class="cn-l">
+    <form class="r-up" onsubmit="return false;">
+      <div class="frow"><div class="fg"><label>Name <span class="r">*</span></label><input class="fc" placeholder="Your name"></div><div class="fg"><label>Organisation <span class="r">*</span></label><input class="fc" placeholder="Company"></div></div>
+      <div class="frow"><div class="fg"><label>Event Date <span class="r">*</span></label><input class="fc" placeholder="Approximate"></div><div class="fg"><label>Format <span class="r">*</span></label><select class="fc"><option>In-person UK</option><option>Europe</option><option>Virtual</option></select></div></div>
+      <div class="frow"><div class="fg"><label>Audience Size <span class="r">*</span></label><select class="fc"><option>Under 100</option><option>100–500</option><option>500–1,000</option><option>1,000+</option></select></div><div class="fg"><label>Sector</label><input class="fc" placeholder="e.g. Finance"></div></div>
+      <div class="fg"><label>Topic</label><select class="fc"><option>Leadership</option><option>Resilience</option><option>Innovation</option><option>First Principles</option></select></div>
+      <div class="fg"><label>Anything else?</label><textarea class="fc" rows="3" placeholder="Budget, theme, context..."></textarea></div>
+      <button class="subm">Submit Enquiry →</button>
+    </form>
+    <aside class="cn-side r-up">
+      <div class="team">
+        <h4>★ The Team</h4>
+        <div class="row"><b>Deborah</b><span>Manager</span></div>
+        <div class="row"><b>Yoyo</b><span>Research &amp; Marketing</span></div>
+        <div class="row"><b>Ed</b><span>Partnerships</span></div>
+      </div>
+      <div class="fees-card">
+        <h4>★ Speaking Fees · Guide</h4>
+        <div class="row"><span>UK</span><b>£4.5–6k</b></div>
+        <div class="row"><span>International</span><b>£8–10k</b></div>
+        <p>Confirmed via contract. Fees vary by format and travel.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<footer>
+  <span><b>MARK BEAUMONT</b> · 2026</span>
+  <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to top</a>
+</footer>
+
+<!-- TWEAKS -->
+<div id="tweaks">
+  <h4>Tweaks</h4>
+  <div class="row"><label>Accent</label>
+    <span class="swatch on" data-accent="#D4FF3D" style="background:#D4FF3D"></span>
+    <span class="swatch" data-accent="#FF5B36" style="background:#FF5B36"></span>
+    <span class="swatch" data-accent="#2B2BFF" style="background:#2B2BFF"></span>
+    <span class="swatch" data-accent="#FFD400" style="background:#FFD400"></span>
+  </div>
+  <div class="row"><label>Theme</label>
+    <div class="seg"><button class="on" data-theme="dark">Dark</button><button data-theme="light">Light</button></div>
+  </div>
+  <div class="row"><label>Grain</label>
+    <div class="seg"><button class="on" data-grain="1">On</button><button data-grain="0">Off</button></div>
+  </div>
+</div>
+
+<script>
+/* PROGRESS BAR */
+(function(){
+  const p=document.getElementById('prog');
+  function t(){
+    const h=document.documentElement;
+    const total=h.scrollHeight - h.clientHeight;
+    p.style.width=(total>0?(h.scrollTop/total)*100:0)+'%';
+  }
+  document.addEventListener('scroll',t,{passive:true});
+})();
+
+/* REVEAL */
+(function(){
+  const els=document.querySelectorAll('.r-up,.r-stagger');
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('on');
+      if(e.target.id==='bigTime'){e.target.querySelectorAll('.rb').forEach((rb,i)=>setTimeout(()=>rb.classList.add('on'),200+i*150));}
+    }
+  }),{threshold:.12});
+  els.forEach(el=>io.observe(el));
+})();
+
+/* TESTIMONIAL DRAG */
+(function(){
+  const tt=document.getElementById('tt');
+  let dragging=false,sx,sl;
+  tt.addEventListener('mousedown',e=>{dragging=true;sx=e.pageX-tt.offsetLeft;sl=tt.scrollLeft;tt.style.userSelect='none';});
+  document.addEventListener('mouseup',()=>{dragging=false;tt.style.userSelect='';});
+  tt.addEventListener('mousemove',e=>{if(!dragging)return;e.preventDefault();tt.scrollLeft=sl-(e.pageX-tt.offsetLeft-sx)*1.4;});
+})();
+
+/* TWEAKS */
+(function(){
+  const panel=document.getElementById('tweaks');
+  window.addEventListener('message',e=>{
+    const d=e.data||{};
+    if(d.type==='__activate_edit_mode')panel.classList.add('on');
+    if(d.type==='__deactivate_edit_mode')panel.classList.remove('on');
+  });
+  window.parent.postMessage({type:'__edit_mode_available'},'*');
+  panel.querySelectorAll('.swatch').forEach(s=>s.addEventListener('click',()=>{
+    panel.querySelectorAll('.swatch').forEach(x=>x.classList.remove('on'));
+    s.classList.add('on');
+    document.documentElement.style.setProperty('--lime',s.dataset.accent);
+  }));
+  panel.querySelectorAll('.seg').forEach(seg=>{
+    seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+      seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      if(b.dataset.theme){
+        const dark=b.dataset.theme==='dark';
+        document.documentElement.style.setProperty('--ink', dark?'#0A0A0A':'#EDE7DA');
+        document.documentElement.style.setProperty('--paper', dark?'#EDE7DA':'#0A0A0A');
+        document.body.style.background=dark?'#0A0A0A':'#EDE7DA';
+        document.body.style.color=dark?'#EDE7DA':'#0A0A0A';
+      }
+      if(b.dataset.grain!==undefined){
+        document.querySelector('.grain').style.display=b.dataset.grain==='1'?'block':'none';
+      }
+    }));
+  });
+})();
+</script>
+</body>
+</html>
